@@ -23,7 +23,7 @@ struct Person {
 	std::vector<std::string> aliases;
 
 	template<class T>
-	void msgpack(T& pack) {
+	void pack(T& pack) {
 		pack(name, age, aliases);
 	}
 };
@@ -34,11 +34,13 @@ int main()
 	auto person = Person{ "John", 22, {"Ripper", "Silverhand"} };
 
 	auto data = msgpack::pack(person); // Pack your object
-	//auto john = msgpack::unpack<Person>(data); // Unpack it
+	auto john = msgpack::unpack<Person>(data); // Unpack it
 
-	//cout << john.name << endl;
-	//cout << john.age << endl;
-	//cout << john.aliases[0] << john.aliases[1] << endl;
+	cout << john.name << endl;
+	cout << john.age << endl;
+	cout << john.aliases[0] << john.aliases[1] << endl;
+
+	return 0;
 
 	// 원속 초기화 (ws2_32 라이브러리 초기화)
 	// 관련 정보가 wsaData에 채워짐
