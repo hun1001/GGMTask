@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[MessagePackObject(true)]
+[MessagePackObject]
 public class MyClass
 {
     // Key attributes take a serialization index (or string name)
