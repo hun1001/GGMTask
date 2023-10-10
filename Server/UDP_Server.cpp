@@ -1,4 +1,5 @@
 #define _WINSOCKAPI_
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <windows.h>
 #include <winsock2.h>
 #include <iostream>
@@ -56,8 +57,9 @@ int main()
 			return 0;
 		}
 
-		cout << "Recv Data! Data: " << recvBuffer << endl;
-		cout << "Recv Data! Len: " << recvLen << endl;
+		cout << "Recv Data: " << recvBuffer << endl;
+		cout << "Recv Len: " << recvLen << endl;
+		cout << "Client IP: " << ::inet_ntoa(clientAddr.sin_addr) << ":" << clientAddr.sin_port << endl;
 
 		int32 errorCode = ::sendto(serverSocket, recvBuffer, recvLen, 0,
 			(SOCKADDR*)&clientAddr, sizeof(clientAddr));
@@ -72,5 +74,4 @@ int main()
 
 	// 윈속 종료
 	::WSACleanup();
-
 }

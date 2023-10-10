@@ -23,13 +23,4 @@ public class GameManager : MonoBehaviour
     {
         _udp.Send("Hello World!");
     }
-
-    //private void Update()
-    //{
-    //    string message = _udp.Receive();
-    //    if (string.IsNullOrEmpty(message))
-    //    {
-    //        Debug.Log(message);
-    //    }
-    //}
 }
