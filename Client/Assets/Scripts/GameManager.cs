@@ -21,17 +21,15 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-
+        _udp.Send("Hello World!");
     }
 
-    private void Update()
-    {
-        if(!_udp.IsConnected())
-        {
-            return;
-        }
-
-        string message = _udp.Receive();
-        Debug.Log(message);
-    }
+    //private void Update()
+    //{
+    //    string message = _udp.Receive();
+    //    if (string.IsNullOrEmpty(message))
+    //    {
+    //        Debug.Log(message);
+    //    }
+    //}
 }

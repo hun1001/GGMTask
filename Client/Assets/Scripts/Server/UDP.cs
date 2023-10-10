@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using UnityEngine;
+using System.Net;
+using System.Text;
 
 public class UDP
 {
@@ -14,8 +16,8 @@ public class UDP
 
     public void Send(string message)
     {
-        byte[] data = System.Text.Encoding.ASCII.GetBytes(message);
-        _socket.Send(data);
+        byte[] data = Encoding.ASCII.GetBytes(message);
+        _socket.SendTo(data, new IPEndPoint(IPAddress.Parse("127.0.0.1"), 7777));
     }
 
     public void Close()
@@ -23,20 +25,10 @@ public class UDP
         _socket.Close();
     }
 
-    public void Connect(string ip, int port)
-    {
-        _socket.Connect(ip, port);
-    }
-
     public string Receive()
     {
         byte[] data = new byte[1024];
         int length = _socket.Receive(data);
-        return System.Text.Encoding.ASCII.GetString(data, 0, length);
-    }
-
-    public bool IsConnected()
-    {
-        return _socket.Connected;
+        return Encoding.ASCII.GetString(data, 0, length);
     }
 }

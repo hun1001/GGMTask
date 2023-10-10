@@ -1,59 +1,76 @@
-// Server side implementation of UDP client-server model 
-#include <bits/stdc++.h> 
-#include <stdlib.h> 
-#include <unistd.h> 
-#include <string.h> 
-#include <sys/types.h> 
-#include <sys/socket.h> 
-#include <arpa/inet.h> 
-#include <netinet/in.h> 
+#define _WINSOCKAPI_
+#include <windows.h>
+#include <winsock2.h>
+#include <iostream>
+#include <thread>
 
-#define PORT	 8080 
-#define MAXLINE 1024 
+#define int32 __int32
 
-// Driver code 
-int main() {
-	int sockfd;
-	char buffer[MAXLINE];
-	const char* hello = "Hello from server";
-	struct sockaddr_in servaddr, cliaddr;
+#pragma comment(lib, "ws2_32.lib")
 
-	// Creating socket file descriptor 
-	if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-		perror("socket creation failed");
-		exit(EXIT_FAILURE);
+using namespace std;
+
+void HandleError(const char* cause) {
+	int32 errCode = ::WSAGetLastError();
+	cout << cause << " Socket ErrorCode: " << errCode << endl;
+}
+
+int main()
+{
+	// 원속 초기화 (ws2_32 라이브러리 초기화)
+	// 관련 정보가 wsaData에 채워짐
+	WSAData wsaData;
+	if (::WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+		return 0;
+
+	SOCKET serverSocket = ::socket(AF_INET, SOCK_DGRAM, 0);
+	if (serverSocket == INVALID_SOCKET) {
+		HandleError("Socket");
+		return 0;
 	}
 
-	memset(&servaddr, 0, sizeof(servaddr));
-	memset(&cliaddr, 0, sizeof(cliaddr));
+	// 연결할 목적지 -> IP + Port ex) XX아파트 YY 호
+	SOCKADDR_IN serverAddr; // IPv4
+	::memset(&serverAddr, 0, sizeof(serverAddr));
+	serverAddr.sin_family = AF_INET;
+	serverAddr.sin_addr.s_addr = ::htonl(INADDR_ANY);
+	serverAddr.sin_port = ::htons(7777);
 
-	// Filling server information 
-	servaddr.sin_family = AF_INET; // IPv4 
-	servaddr.sin_addr.s_addr = INADDR_ANY;
-	servaddr.sin_port = htons(PORT);
-
-	// Bind the socket with the server address 
-	if (bind(sockfd, (const struct sockaddr*)&servaddr,
-		sizeof(servaddr)) < 0)
-	{
-		perror("bind failed");
-		exit(EXIT_FAILURE);
+	if (::bind(serverSocket, (SOCKADDR*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
+		HandleError("Bind");
 	}
 
-	socklen_t len;
-	int n;
+	while (true) {
+		SOCKADDR_IN clientAddr;
+		::memset(&clientAddr, 0, sizeof(clientAddr));
+		int32 addrLen = sizeof(clientAddr);
 
-	len = sizeof(cliaddr); //len is value/result 
+		this_thread::sleep_for(1s);
 
-	n = recvfrom(sockfd, (char*)buffer, MAXLINE,
-		MSG_WAITALL, (struct sockaddr*)&cliaddr,
-		&len);
-	buffer[n] = '\0';
-	printf("Client : %s\n", buffer);
-	sendto(sockfd, (const char*)hello, strlen(hello),
-		MSG_CONFIRM, (const struct sockaddr*)&cliaddr,
-		len);
-	std::cout << "Hello message sent." << std::endl;
+		char recvBuffer[1000];
+		int32 recvLen = ::recvfrom(serverSocket, recvBuffer, sizeof(recvBuffer), 0,
+			(SOCKADDR*)&clientAddr, &addrLen);
 
-	return 0;
+		if (recvLen <= 0) {
+			HandleError("RecvFrom");
+			return 0;
+		}
+
+		cout << "Recv Data! Data: " << recvBuffer << endl;
+		cout << "Recv Data! Len: " << recvLen << endl;
+
+		int32 errorCode = ::sendto(serverSocket, recvBuffer, recvLen, 0,
+			(SOCKADDR*)&clientAddr, sizeof(clientAddr));
+
+		if (errorCode == SOCKET_ERROR) {
+			HandleError("SendTo");
+			return 0;
+		}
+
+		cout << "Send Data! Len: " << recvLen << endl;
+	}
+
+	// 윈속 종료
+	::WSACleanup();
+
 }
