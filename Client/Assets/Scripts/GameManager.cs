@@ -9,6 +9,9 @@ public class GameManager : MonoBehaviour
 
     private UDP _udp = null;
 
+    [SerializeField]
+    private GameObject _playerPrefab = null;
+
     private void Awake()
     {
         _instance = this;
@@ -18,7 +21,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        _udp.Bind(12345);
+
     }
 
     private void Update()

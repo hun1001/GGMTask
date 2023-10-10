@@ -28,11 +28,6 @@ public class UDP
         _socket.Connect(ip, port);
     }
 
-    public void Bind(int port)
-    {
-        _socket.Bind(new System.Net.IPEndPoint(System.Net.IPAddress.Any, port));
-    }
-
     public string Receive()
     {
         byte[] data = new byte[1024];
