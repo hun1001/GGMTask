@@ -1,5 +1,6 @@
 #define _WINSOCKAPI_
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
+#include "msgpack.hpp"
 #include <windows.h>
 #include <winsock2.h>
 #include <iostream>
