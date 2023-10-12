@@ -17,7 +17,8 @@ void HandleError(const char* cause) {
 	cout << cause << " Socket ErrorCode: " << errCode << endl;
 }
 
-struct Person {
+class Person {
+public:
 	std::string name;
 	uint16_t age;
 	std::vector<std::string> aliases;
@@ -28,17 +29,70 @@ struct Person {
 	}
 };
 
+enum PacketType
+{
+	None,
+	Join,
+	Transform
+};
+
+class Packet abstract
+{
+public:
+	Packet()
+	{
+
+	}
+
+	PacketType packet = PacketType::None;
+};
+
+class TransformPacket {
+public:
+	float x;
+	float y;
+
+	TransformPacket() : x(0), y(0)
+	{
+
+	}
+
+	TransformPacket(float x, float y)
+	{
+		this->x = x;
+		this->y = y;
+	}
+
+	void Print()
+	{
+		cout << "x: " << x << ", " << "y: " << y << endl;
+	}
+
+	template<class T>
+	void pack(T& pack)
+	{
+		pack(x, y);
+	}
+};
 
 int main()
 {
-	auto person = Person{ "John", 22, {"Ripper", "Silverhand"} };
+	//auto person = Person{ "John", 22, {"Ripper", "Silverhand"} };
 
-	auto data = msgpack::pack(person); // Pack your object
-	auto john = msgpack::unpack<Person>(data); // Unpack it
+	//auto data = msgpack::pack(person); // Pack your object
+	//auto john = msgpack::unpack<Person>(data); // Unpack it
 
-	cout << john.name << endl;
-	cout << john.age << endl;
-	cout << john.aliases[0] << john.aliases[1] << endl;
+	//cout << john.name << endl;
+	//cout << john.age << endl;
+	//cout << john.aliases[0] << john.aliases[1] << endl;
+
+	auto packet = TransformPacket(10, 20);
+
+	auto data = msgpack::pack(packet);
+
+	auto unpackData = msgpack::unpack<TransformPacket>(data);
+
+	unpackData.Print();
 
 	return 0;
 
